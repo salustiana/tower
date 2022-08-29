@@ -1,0 +1,8 @@
+/home/salus/si/tdgame/.mono/temp/bin/Debug/Tower.dll
+/home/salus/si/tdgame/.mono/temp/bin/Debug/Tower.pdb
+/home/salus/si/tdgame/.mono/temp/obj/Debug/Tower.csproj.AssemblyReference.cache
+/home/salus/si/tdgame/.mono/temp/obj/Debug/Tower.AssemblyInfoInputs.cache
+/home/salus/si/tdgame/.mono/temp/obj/Debug/Tower.AssemblyInfo.cs
+/home/salus/si/tdgame/.mono/temp/obj/Debug/Tower.csproj.CoreCompileInputs.cache
+/home/salus/si/tdgame/.mono/temp/obj/Debug/Tower.dll
+/home/salus/si/tdgame/.mono/temp/obj/Debug/Tower.pdb

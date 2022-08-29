@@ -1,0 +1,2 @@
+﻿33135
+/usr/local/games/Godot_v3.5-stable_mono_x11.64
