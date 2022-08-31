@@ -1,23 +1,43 @@
 using Godot;
 
-public class Enemy : Node2D
+public class Enemy : PathFollow2D
 {
 	const int MaxHP = 100;
-	const float Speed = 80.0f;
+	const float Speed = 350.0f;
 	const float BlinkTime = 0.1f;
 
 	int hp;
 	float blinkTimer = 0.0f;
 
+	public delegate void HandleEnemyDied(Enemy e);
+	public event HandleEnemyDied EnemyDied;
+	void Die()
+	{
+		if (EnemyDied != null)
+			EnemyDied(this);
+	}
+
+	public delegate void HandleEnemyWin(Enemy e);
+	public event HandleEnemyWin EnemyWin;
+	void Win()
+	{
+		if (EnemyWin != null)
+			EnemyWin(this);
+	}
+
 	public override void _Ready()
 	{
+		Rotate = false;
+		Loop = false;
 		hp = MaxHP;
 	}
 
 	public override void _PhysicsProcess(float delta)
 	{
-		Position += Vector2.Right * Speed * delta;
 		BlinkCoroutine(delta);
+		Offset += Speed * delta;
+		if (UnitOffset >= 0.99f)
+			Win();
 	}
 
 	void BlinkCoroutine(float delta)
@@ -38,10 +58,5 @@ public class Enemy : Node2D
 
 		if (hp <= 0)
 			Die();
-	}
-
-	void Die()
-	{
-		QueueFree();
 	}
 }

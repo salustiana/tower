@@ -4,18 +4,18 @@ using System.Collections.Generic;
 public class Tower : Node2D
 {
 	const int FirePower = 20;
-	const float FirePeriod = 0.5f;
+	const float FirePeriod = 0.2f;
 
 	float fireTimer = 0.0f;
 	Enemy target;
-	List<Enemy> enemiesOnSight;
+	LinkedList<Enemy> enemiesOnSight;
 	Area2D detectionArea;
 
 	public override void _Ready()
 	{
 		target = null;
 		detectionArea = GetNodeOrNull<Area2D>("detectionArea");
-		enemiesOnSight = new List<Enemy>();
+		enemiesOnSight = new LinkedList<Enemy>();
 
 		GetNode<Area2D>("detectionArea").Connect(
 			"area_entered",
@@ -36,46 +36,54 @@ public class Tower : Node2D
 
 		if (target != null)
 		{
-			if (!IsInstanceValid(target) || target.IsQueuedForDeletion())
-				SetNewTarget();
-			else
+			LookAt(target.GlobalPosition);
+			if (fireTimer >= FirePeriod)
 			{
-				LookAt(target.GlobalPosition);
-				if (fireTimer >= FirePeriod)
-				{
-					ShootTarget();
-					fireTimer = 0.0f;
-				}
+				ShootTarget();
+				fireTimer = 0.0f;
 			}
 		}
+	}
+
+	void SightEnemy(Enemy e)
+	{
+		enemiesOnSight.AddLast(e);
+		e.EnemyDied += OnEnemyDied;
+		if (target == null)
+			SetNewTarget();
+	}
+
+	void UnsightEnemy(Enemy e)
+	{
+		enemiesOnSight.Remove(e);
+		e.EnemyDied -= OnEnemyDied;
+		if (target == e)
+			SetNewTarget();
 	}
 
 	void OnAreaEntered(Area2D area)
 	{
 		Enemy e = area.GetParentOrNull<Enemy>();
 		if (e != null)
-		{
-			enemiesOnSight.Add(e);
-			if (target == null)
-				SetNewTarget();
-		}
+			SightEnemy(e);
 	}
 
 	void OnAreaExited(Area2D area)
 	{
 		Enemy e = area.GetParentOrNull<Enemy>();
 		if (e != null)
-		{
-			enemiesOnSight.Remove(e);
-			if (target == e)
-				SetNewTarget();
-		}
+			UnsightEnemy(e);
+	}
+
+	void OnEnemyDied(Enemy e)
+	{
+		UnsightEnemy(e);
 	}
 
 	void SetNewTarget()
 	{
 		if (enemiesOnSight.Count > 0)
-			target = enemiesOnSight[0];
+			target = enemiesOnSight.Last.Value;
 		else
 			target = null;
 	}
