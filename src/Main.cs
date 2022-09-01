@@ -1,19 +1,93 @@
 using Godot;
 
+using System.IO;
+
+using Newtonsoft.Json;
+
 public class Main : Node
 {
+	// config
 	const int maxHP = 5;
-	const float SpawnPeriod = 0.2f;
-	PackedScene enemyScene = GD.Load<PackedScene>("res://Enemy.tscn");
+	PackedScene[] enemyTypes = {
+		GD.Load<PackedScene>("res://enemies/SimpleEnemy.tscn"),
+		GD.Load<PackedScene>("res://enemies/FastEnemy.tscn"),
+	};
 
+	// internals
 	int hp;
 	int enemiesSpawned = 0;
 	int enemiesOnScreen = 0;
-	bool spawning = true;
-	float spawnTimer = 0.0f;
 	Path2D path;
 	Label hpLabel;
-	VideoPlayer videoPlayer;
+	Control UI;
+	Level level;
+
+	public override void _Ready()
+	{
+		// setup children
+		UI = GetNode<Control>("UI");
+		UI.GetNode<Button>("playButton").Connect(
+			"pressed", this, nameof(PlayMode)
+		);
+		UI.GetNode<Button>("towerButton").Connect(
+			"pressed", this, nameof(PlaceTower)
+		);
+		UI.GetNode<Button>("towerButton").ToggleMode = true;
+		path = GetNode<Path2D>("Path2D");
+		hpLabel = GetNode<Label>("HUD/hpLabel");
+
+		// housekeeping
+		hp = maxHP;
+		hpLabel.Text = hp.ToString();
+
+		// begin
+		SetupMode();
+	}
+
+	void LoadLevel()
+	{
+		using (StreamReader r = new StreamReader("./levels/l1.json"))
+		{
+			JsonSerializerSettings s = new JsonSerializerSettings();
+			s.MissingMemberHandling = MissingMemberHandling.Error;
+
+			string json = r.ReadToEnd();
+			level = JsonConvert.DeserializeObject<Level>(json, s);
+		}
+
+		foreach (SpawnCmd sc in level.spawnCmds)
+			CreateSpawner(sc);
+	}
+
+	async void CreateSpawner(SpawnCmd sc)
+	{
+		await ToSignal(GetTree().CreateTimer(sc.timestamp), "timeout");
+		for (int i = 0; i < sc.enemyCount; i++)
+		{
+			Enemy e = enemyTypes[sc.enemyType].Instance<Enemy>();
+			e.EnemyDied += OnEnemyDied;
+			e.EnemyWin += OnEnemyWin;
+			path.AddChild(e);
+			enemiesSpawned++;
+			enemiesOnScreen++;
+			await ToSignal(GetTree().CreateTimer(
+				sc.spawnPeriod
+			), "timeout");
+		}
+	}
+
+	void PlayMode()
+	{
+		UI.Hide();
+		enemiesSpawned = 0;
+		enemiesOnScreen = 0;
+		LoadLevel();
+	}
+
+	void SetupMode()
+	{
+		UI.Show();
+	}
 
 	void OnEnemyDied(Enemy e)
 	{
@@ -31,51 +105,10 @@ public class Main : Node
 			GameOver();
 	}
 
-	public override void _Ready()
-	{
-		hp = maxHP;
-		path = GetNodeOrNull<Path2D>("Path2D");
-		hpLabel = GetNodeOrNull<Label>("UI/hpLabel");
-		hpLabel.Text = hp.ToString();
-
-		videoPlayer = GetNodeOrNull<VideoPlayer>("UI/VideoPlayer");
-		videoPlayer.Expand = false;
-		videoPlayer.Visible = false;
-	}
-
-	public override void _PhysicsProcess(float delta)
-	{
-		SpawnCoroutine(delta);
-		if (!spawning && enemiesOnScreen == 0)
-			LevelEnd();
-	}
-
-	void SpawnCoroutine(float delta)
-	{
-		if (!spawning)
-			return;
-
-		spawnTimer += delta;
-		if (spawnTimer >= SpawnPeriod)
-		{
-			Enemy e = enemyScene.Instance<Enemy>();
-			e.EnemyDied += OnEnemyDied;
-			e.EnemyWin += OnEnemyWin;
-			path.AddChild(e);
-			enemiesSpawned++;
-			enemiesOnScreen++;
-			spawnTimer = 0.0f;
-			if (enemiesSpawned >= 30)
-				spawning = false;
-		}
-	}
-
 	void LevelEnd()
 	{
 		GD.Print("won!");
 		SetPhysicsProcess(false);
-		videoPlayer.Visible = true;
-		videoPlayer.Play();
 	}
 
 	void GameOver()

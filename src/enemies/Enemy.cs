@@ -2,8 +2,9 @@ using Godot;
 
 public class Enemy : PathFollow2D
 {
-	const int MaxHP = 100;
-	const float Speed = 350.0f;
+
+	protected int MaxHP = 100;
+	protected float Speed = 350.0f;
 	const float BlinkTime = 0.1f;
 
 	int hp;

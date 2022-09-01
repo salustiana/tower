@@ -1,8 +1,10 @@
 {
   "version": 2,
-  "dgSpecHash": "qWBc7jOJ6BHOCm/POeV9vm/EQ8bPXchjFiCSr+Q7/CBowT5vohbSIt5pj5Cf+cSXfxuS+JhrIg82ajFPVki1oQ==",
+  "dgSpecHash": "J4U9/PQuGSS47SupOI6acf0UDBAZS8OkTS8ZkS8qM4WnHSt1Vfb+B1PQARxtCBl+mgP7Q4D5ZFJ2/0PSredV9A==",
   "success": true,
   "projectFilePath": "/home/salus/si/tdgame/Tower.csproj",
-  "expectedPackageFiles": [],
+  "expectedPackageFiles": [
+    "/home/salus/.nuget/packages/newtonsoft.json/11.0.2/newtonsoft.json.11.0.2.nupkg.sha512"
+  ],
   "logs": []
 }

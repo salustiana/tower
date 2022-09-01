@@ -14,7 +14,7 @@ public class Tower : Node2D
 	public override void _Ready()
 	{
 		target = null;
-		detectionArea = GetNodeOrNull<Area2D>("detectionArea");
+		detectionArea = GetNode<Area2D>("detectionArea");
 		enemiesOnSight = new LinkedList<Enemy>();
 
 		GetNode<Area2D>("detectionArea").Connect(

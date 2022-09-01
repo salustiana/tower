@@ -1,12 +1,11 @@
-[gd_scene load_steps=5 format=2]
+[gd_scene load_steps=4 format=2]
 
 [ext_resource path="res://Tower.tscn" type="PackedScene" id=1]
-[ext_resource path="res://1649077993757.webm" type="VideoStream" id=2]
 [ext_resource path="res://src/Main.cs" type="Script" id=3]
 
 [sub_resource type="Curve2D" id=1]
 _data = {
-"points": PoolVector2Array( 0, 0, 0, 0, 78, 87, 0, 0, 0, 0, 978, 78, 0, 0, 0, 0, 984, 197, 0, 0, 0, 0, 99, 179, 0, 0, 0, 0, 96, 358, 0, 0, 0, 0, 977, 359, 0, 0, 0, 0, 983, 461, 0, 0, 0, 0, 92, 464, 0, 0, 0, 0, 91, 570, 0, 0, 0, 0, 985, 570 )
+"points": PoolVector2Array( 0, 0, 0, 0, -72, 68, 0, 0, 0, 0, 978, 78, 0, 0, 0, 0, 984, 197, 0, 0, 0, 0, 99, 179, 0, 0, 0, 0, 96, 358, 0, 0, 0, 0, 977, 359, 0, 0, 0, 0, 983, 461, 0, 0, 0, 0, 92, 464, 0, 0, 0, 0, 91, 570, 0, 0, 0, 0, 985, 570 )
 }
 
 [node name="main" type="Node"]
@@ -31,13 +30,23 @@ curve = SubResource( 1 )
 margin_right = 40.0
 margin_bottom = 40.0
 
-[node name="hpLabel" type="Label" parent="UI"]
+[node name="GridContainer" type="GridContainer" parent="UI"]
+margin_right = 40.0
+margin_bottom = 40.0
+
+[node name="towerButton" type="Button" parent="UI/GridContainer"]
+margin_right = 12.0
+margin_bottom = 20.0
+
+[node name="playButton" type="Button" parent="UI/GridContainer"]
+margin_top = 24.0
+margin_right = 12.0
+margin_bottom = 44.0
+
+[node name="HUD" type="Control" parent="."]
+margin_right = 40.0
+margin_bottom = 40.0
+
+[node name="hpLabel" type="Label" parent="HUD"]
 margin_right = 40.0
 margin_bottom = 14.0
-
-[node name="VideoPlayer" type="VideoPlayer" parent="UI"]
-margin_left = 12.0
-margin_top = 10.0
-margin_right = 52.0
-margin_bottom = 50.0
-stream = ExtResource( 2 )
